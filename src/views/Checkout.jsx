@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Truck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { createOrder } from '../lib/orders.service';
 
 export default function Checkout() {
-  const { cart, getSubtotal, getShippingFee, getTotal, clearCart } = useCart();
+  const { cart, getSubtotal, getShippingFee, getTotal, clearCart, openCart } = useCart();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: '', email: '', phone: '', address: '', city: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   if (cart.length === 0) {
     return (
@@ -30,30 +32,36 @@ export default function Checkout() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setError('');
 
     const orderNumber = `ITR-${Date.now().toString(36).toUpperCase()}`;
-    const order = {
-      orderNumber,
-      customer: form,
-      items: cart,
-      subtotal: getSubtotal(),
-      shippingCost: getShippingFee(),
-      total: getTotal(),
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
 
-    const existing = JSON.parse(localStorage.getItem('itris_orders') || '[]');
-    localStorage.setItem('itris_orders', JSON.stringify([order, ...existing]));
-    clearCart();
+    try {
+      await createOrder({
+        orderNumber,
+        customer: form,
+        items: cart.map((item) => ({
+          id: item.id,
+          name: item.name,
+          slug: item.slug,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.images?.[0] || null,
+        })),
+        total: getTotal(),
+      });
 
-    setTimeout(() => {
+      clearCart();
       alert(`Order placed successfully!\nReference: ${orderNumber}\nPayment: Cash on Delivery`);
       navigate('/');
-    }, 600);
+    } catch (err) {
+      console.error('Order failed:', err);
+      setError('Failed to place order. Please try again.');
+      setSubmitting(false);
+    }
   };
 
   const inputClass = 'w-full bg-near-black/40 border border-white/[0.06] focus:border-gold/30 rounded-lg px-4 py-2.5 text-sm text-ivory placeholder-sage/25 outline-none transition-colors';
@@ -63,12 +71,18 @@ export default function Checkout() {
       <div className="max-w-5xl mx-auto px-5 lg:px-8 py-12">
 
         {/* Back */}
-        <Link to="/cart" className="flex items-center gap-1.5 text-[11px] text-sage/40 hover:text-gold tracking-wider mb-10 w-fit transition-colors">
+        <button onClick={openCart} className="flex items-center gap-1.5 text-[11px] text-sage/40 hover:text-gold tracking-wider mb-10 w-fit transition-colors">
           <ArrowLeft size={14} strokeWidth={1.5} />
           Return to cart
-        </Link>
+        </button>
 
         <h1 className="font-heading text-3xl sm:text-4xl text-ivory mb-12">Checkout</h1>
+
+        {error && (
+          <div className="bg-ember/10 border border-ember/30 text-ember text-xs p-3 rounded-md mb-6 leading-relaxed">
+            {error}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
 

@@ -1,11 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, Sparkles, Moon } from 'lucide-react';
-import { products, categories } from '../data/products';
+import { fetchProducts, fetchFeaturedProducts } from '../lib/products.service';
+import { fetchCategories } from '../lib/categories.service';
 import ProductCard from '../components/ProductCard';
 
 export default function Home() {
-  const featured = products.filter((p) => p.featured);
+  const [featured, setFeatured] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [featuredData, productsData, categoriesData] = await Promise.all([
+          fetchFeaturedProducts(),
+          fetchProducts(),
+          fetchCategories(),
+        ]);
+        setFeatured(featuredData);
+        setAllProducts(productsData);
+        setCategories(categoriesData);
+      } catch (err) {
+        console.error('Failed to load homepage data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-near-black">
+        <div className="animate-spin w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -82,7 +114,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {categories.map((cat) => {
               // Pick the first product from this category to get an image
-              const previewProduct = products.find((p) => p.category === cat.id);
+              const previewProduct = allProducts.find((p) => p.category === cat.id);
+              const catCount = allProducts.filter((p) => p.category === cat.id).length;
               return (
                 <Link
                   key={cat.id}
@@ -107,7 +140,7 @@ export default function Home() {
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-8">
                     <span className="text-[9px] tracking-[0.3em] uppercase text-gold/60 block mb-2">
-                      {products.filter((p) => p.category === cat.id).length} items
+                      {catCount} items
                     </span>
                     <h3 className="font-heading text-2xl text-ivory group-hover:text-gold transition-colors duration-300 mb-2">
                       {cat.name}
@@ -169,9 +202,19 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10 stagger">
-            {products.map((product) => (
+            {allProducts.slice(0, 4).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
+          </div>
+
+          <div className="mt-14 flex justify-center">
+            <Link
+              to="/shop"
+              className="group border border-gold/30 text-gold font-heading text-xs tracking-[0.2em] uppercase py-3.5 px-8 rounded-lg hover:bg-gold/10 hover:border-gold/50 transition-all duration-300 flex items-center gap-2"
+            >
+              View all products
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
         </div>
       </section>

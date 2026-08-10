@@ -6,12 +6,12 @@ import { AuthProvider } from './context/AuthContext';
 // Storefront Components
 import Header from './components/Header';
 import Footer from './components/Footer';
+import CartDrawer from './components/CartDrawer';
 
 // Storefront Views
 import Home from './views/Home';
 import Shop from './views/Shop';
 import ProductDetail from './views/ProductDetail';
-import Cart from './views/Cart';
 import Checkout from './views/Checkout';
 import SearchResults from './views/SearchResults';
 
@@ -19,12 +19,16 @@ import SearchResults from './views/SearchResults';
 import AdminLayout from './admin/Layout';
 import AdminLogin from './admin/Login';
 import AdminDashboard from './admin/Dashboard';
+import AdminProducts from './admin/Products';
+import AdminOrders from './admin/Orders';
+import AdminCategories from './admin/Categories';
 
 // Storefront Layout Wrapper
 function StorefrontLayout() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+      <CartDrawer />
       <main className="flex-grow">
         <Outlet />
       </main>
@@ -45,7 +49,6 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/search" element={<SearchResults />} />
             </Route>
@@ -56,10 +59,9 @@ export default function App() {
             {/* Protected Admin Console */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
-              {/* Fallback to Dashboard for undefined admin paths in Phase 1 */}
-              <Route path="products" element={<AdminDashboard />} />
-              <Route path="categories" element={<AdminDashboard />} />
-              <Route path="orders" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="orders" element={<AdminOrders />} />
             </Route>
 
             {/* Global Fallback Route */}

@@ -8,19 +8,23 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSubmitting(true);
 
-    const success = login(username, password);
-    if (success) {
+    try {
+      await login(email, password);
       navigate('/admin');
-    } else {
-      setError('Invalid administrator username or password combination.');
+    } catch (err) {
+      setError(err.message || 'Invalid email or password.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -46,17 +50,16 @@ export default function Login() {
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-5">
           
           <div>
-            <label htmlFor="username" className="block text-[10px] text-sage uppercase tracking-wider mb-2">Username</label>
+            <label htmlFor="email" className="block text-[10px] text-sage uppercase tracking-wider mb-2">Email</label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full bg-deep-green/60 border border-white/10 focus:border-gold rounded px-4 py-2.5 text-sm text-ivory placeholder-sage/30 outline-none"
-              placeholder="e.g. admin"
+              placeholder="admin@itris.ma"
             />
-            <p className="text-[10px] text-sage/40 mt-1">Default demo username is: admin</p>
           </div>
 
           <div>
@@ -70,15 +73,15 @@ export default function Login() {
               className="w-full bg-deep-green/60 border border-white/10 focus:border-gold rounded px-4 py-2.5 text-sm text-ivory placeholder-sage/30 outline-none"
               placeholder="••••••••"
             />
-            <p className="text-[10px] text-sage/40 mt-1">Default demo password is: admin123</p>
           </div>
 
           <button
             type="submit"
-            className="bg-gold text-ink font-heading text-sm py-3 px-6 rounded-md hover:bg-pale-gold hover:shadow-gold transition-all duration-300 w-full flex items-center justify-center gap-2 mt-2"
+            disabled={submitting}
+            className="bg-gold text-ink font-heading text-sm py-3 px-6 rounded-md hover:bg-pale-gold hover:shadow-gold transition-all duration-300 w-full flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
           >
-            Authenticate Portal
-            <ArrowRight size={16} />
+            {submitting ? 'Signing in…' : 'Authenticate Portal'}
+            {!submitting && <ArrowRight size={16} />}
           </button>
 
         </form>

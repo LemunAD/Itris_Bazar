@@ -4,7 +4,7 @@ import { ShoppingBag, Search, Menu, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 export default function Header() {
-  const { getCartCount } = useCart();
+  const { getCartCount, openCart } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,8 +101,8 @@ export default function Header() {
             </button>
 
             {/* Cart */}
-            <Link
-              to="/cart"
+            <button
+              onClick={openCart}
               className="p-2.5 text-sage/70 hover:text-gold transition-colors relative"
               aria-label="Cart"
             >
@@ -112,7 +112,7 @@ export default function Header() {
                   {getCartCount()}
                 </span>
               )}
-            </Link>
+            </button>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -196,9 +196,12 @@ export default function Header() {
 
             {/* Cart link */}
             <div className="p-5 border-t border-white/[0.04]">
-              <Link
-                to="/cart"
-                className="flex items-center justify-between py-3 px-3 text-sm tracking-[0.12em] uppercase text-sage/70 hover:text-gold rounded-md hover:bg-gold/[0.04] transition-colors"
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  openCart();
+                }}
+                className="w-full flex items-center justify-between py-3 px-3 text-sm tracking-[0.12em] uppercase text-sage/70 hover:text-gold rounded-md hover:bg-gold/[0.04] transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <ShoppingBag size={16} strokeWidth={1.5} />
@@ -209,7 +212,7 @@ export default function Header() {
                     {getCartCount()}
                   </span>
                 )}
-              </Link>
+              </button>
             </div>
           </div>
         </div>

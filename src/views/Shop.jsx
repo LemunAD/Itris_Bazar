@@ -1,19 +1,50 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Moon } from 'lucide-react';
-import { products, categories } from '../data/products';
+import { fetchProducts } from '../lib/products.service';
+import { fetchCategories } from '../lib/categories.service';
 import ProductCard from '../components/ProductCard';
 
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get('category');
 
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [productsData, categoriesData] = await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+        ]);
+        setProducts(productsData);
+        setCategories(categoriesData);
+      } catch (err) {
+        console.error('Failed to load shop data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
   const filtered = useMemo(() => {
     if (!activeCategory) return products;
     return products.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
+  }, [activeCategory, products]);
 
   const activeCatObj = categories.find((c) => c.slug === activeCategory);
+
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen flex items-center justify-center bg-near-black-green">
+        <div className="animate-spin w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20 min-h-screen pb-24 bg-near-black-green">

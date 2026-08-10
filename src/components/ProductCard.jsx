@@ -37,6 +37,13 @@ export default function ProductCard({ product }) {
           loading="lazy"
         />
 
+        {/* Sold Out Badge overlay */}
+        {product.stock <= 0 && (
+          <div className="absolute top-3 right-3 bg-ember/90 backdrop-blur-sm text-ivory text-[9px] font-bold tracking-[0.2em] uppercase px-2 py-1 rounded-sm shadow-lg z-10">
+            Sold Out
+          </div>
+        )}
+
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-near-black/80 via-near-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end p-4">
           <div className="flex gap-2 w-full">
@@ -47,18 +54,27 @@ export default function ProductCard({ product }) {
               <Eye size={14} strokeWidth={1.5} />
               View
             </Link>
-            <button
-              onClick={handleQuickAdd}
-              disabled={isAdding}
-              className={`flex-1 flex items-center justify-center gap-2 text-xs tracking-wider uppercase py-2.5 rounded-md transition-all duration-300 ${
-                isAdding
-                  ? 'bg-olive-glow/80 text-ivory border border-olive-glow'
-                  : 'bg-gold/90 text-ink border border-gold hover:bg-gold'
-              }`}
-            >
-              <ShoppingCart size={14} strokeWidth={1.5} />
-              {isAdding ? 'Added ✓' : 'Add'}
-            </button>
+            {product.stock > 0 ? (
+              <button
+                onClick={handleQuickAdd}
+                disabled={isAdding}
+                className={`flex-1 flex items-center justify-center gap-2 text-xs tracking-wider uppercase py-2.5 rounded-md transition-all duration-300 ${
+                  isAdding
+                    ? 'bg-olive-glow/80 text-ivory border border-olive-glow'
+                    : 'bg-gold/90 text-ink border border-gold hover:bg-gold'
+                }`}
+              >
+                <ShoppingCart size={14} strokeWidth={1.5} />
+                {isAdding ? 'Added ✓' : 'Add'}
+              </button>
+            ) : (
+              <button
+                disabled
+                className="flex-1 flex items-center justify-center gap-2 text-[10px] tracking-wider uppercase py-2.5 rounded-md transition-all duration-300 bg-near-black/50 text-sage/50 border border-white/5 cursor-not-allowed"
+              >
+                Sold Out
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -11,10 +11,14 @@ export function CartProvider({ children }) {
     const saved = localStorage.getItem('itris_cart');
     return saved ? JSON.parse(saved) : [];
   });
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('itris_cart', JSON.stringify(cart));
   }, [cart]);
+
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   const addToCart = (product, quantity = 1) => {
     setCart((prev) => {
@@ -28,6 +32,7 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...product, quantity }];
     });
+    openCart();
   };
 
   const updateQuantity = (productId, quantity) => {
@@ -70,6 +75,9 @@ export function CartProvider({ children }) {
     <CartContext.Provider
       value={{
         cart,
+        isCartOpen,
+        openCart,
+        closeCart,
         addToCart,
         updateQuantity,
         removeFromCart,

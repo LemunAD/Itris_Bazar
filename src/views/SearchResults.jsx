@@ -1,23 +1,38 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { products } from '../data/products';
+import { searchProducts } from '../lib/products.service';
 import ProductCard from '../components/ProductCard';
 
 export default function SearchResults() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
 
-  const results = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase().trim();
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.shortDescription.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-    );
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults([]);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+
+    searchProducts(query.trim())
+      .then((data) => {
+        if (!cancelled) setResults(data);
+      })
+      .catch((err) => {
+        console.error('Search failed:', err);
+        if (!cancelled) setResults([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
   }, [query]);
 
   return (
@@ -34,11 +49,17 @@ export default function SearchResults() {
         <div className="mb-12">
           <h1 className="font-heading text-3xl text-ivory mb-2">Search Results</h1>
           <p className="text-sm text-sage/50">
-            {results.length} result{results.length !== 1 ? 's' : ''} for "<span className="text-gold/70">{query}</span>"
+            {loading
+              ? 'Searching…'
+              : `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}
           </p>
         </div>
 
-        {results.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-24">
+            <div className="animate-spin w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full" />
+          </div>
+        ) : results.length === 0 ? (
           <div className="text-center py-24">
             <Search size={32} className="text-sage/15 mx-auto mb-4" strokeWidth={1} />
             <h3 className="font-heading text-xl text-ivory/60 mb-2">No matches found</h3>

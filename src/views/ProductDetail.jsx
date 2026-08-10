@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { products } from '../data/products';
+import { fetchProductBySlug, fetchProductsByCategory } from '../lib/products.service';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 
@@ -13,13 +13,47 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
 
-  const product = useMemo(() => products.find((p) => p.slug === slug), [slug]);
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Related products (same category, excluding current)
-  const related = useMemo(() => {
-    if (!product) return [];
-    return products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
-  }, [product]);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setActiveImage(0);
+      setQuantity(1);
+
+      try {
+        const p = await fetchProductBySlug(slug);
+        if (cancelled) return;
+        setProduct(p);
+
+        if (p) {
+          const relatedProducts = await fetchProductsByCategory(p.category);
+          if (!cancelled) {
+            setRelated(relatedProducts.filter((r) => r.id !== p.id).slice(0, 4));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load product:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen flex items-center justify-center bg-near-black-green">
+        <div className="animate-spin w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -117,7 +151,7 @@ export default function ProductDetail() {
           {/* ── RIGHT: Product Details ── */}
           <div className="flex flex-col justify-center lg:py-8">
             <span className="text-[10px] tracking-[0.3em] uppercase text-bronze/60 block mb-2">
-              {product.category === 'wall-tapestry' ? 'Wall Tapestry' : 'Tarot Cards'}
+              {product.categoryName || product.category}
             </span>
 
             <h1 className="font-heading text-3xl sm:text-4xl text-ivory leading-tight mb-4">
@@ -125,12 +159,18 @@ export default function ProductDetail() {
             </h1>
 
             {/* Price */}
-            <div className="flex items-baseline gap-2 mb-6">
+            <div className="flex items-baseline gap-2 mb-2">
               <span className="font-heading text-2xl text-gold">
                 {product.price.toFixed(2)}
               </span>
               <span className="text-xs text-gold/50 tracking-wider">DH</span>
             </div>
+            {product.stock > 0 && product.stock <= 5 && (
+              <div className="text-ember/90 text-xs font-medium tracking-wide mb-6">
+                Only {product.stock} left in stock!
+              </div>
+            )}
+            {(product.stock > 5 || product.stock <= 0) && <div className="mb-6" />}
 
             {/* Description */}
             <p className="text-sm text-sage/60 leading-relaxed mb-8 max-w-lg">
@@ -139,38 +179,50 @@ export default function ProductDetail() {
 
             {/* Qty + Add to Cart */}
             <div className="flex items-center gap-4 mb-8 pb-8 border-b border-white/[0.04]">
-              {/* Quantity selector */}
-              <div className="flex items-center border border-white/[0.06] rounded-lg overflow-hidden bg-near-black">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 flex items-center justify-center text-sage/50 hover:text-gold transition-colors text-sm"
-                >
-                  −
-                </button>
-                <span className="w-10 h-10 flex items-center justify-center text-ivory text-sm border-x border-white/[0.04]">
-                  {quantity}
-                </span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 flex items-center justify-center text-sage/50 hover:text-gold transition-colors text-sm"
-                >
-                  +
-                </button>
-              </div>
+              {product.stock > 0 ? (
+                <>
+                  {/* Quantity selector */}
+                  <div className="flex items-center border border-white/[0.06] rounded-lg overflow-hidden bg-near-black">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-10 h-10 flex items-center justify-center text-sage/50 hover:text-gold transition-colors text-sm"
+                    >
+                      −
+                    </button>
+                    <span className="w-10 h-10 flex items-center justify-center text-ivory text-sm border-x border-white/[0.04]">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                      className="w-10 h-10 flex items-center justify-center text-sage/50 hover:text-gold transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={quantity >= product.stock}
+                    >
+                      +
+                    </button>
+                  </div>
 
-              {/* Add to cart button */}
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className={`flex-1 flex items-center justify-center gap-2.5 font-heading text-xs tracking-[0.15em] uppercase py-3.5 rounded-lg transition-all duration-400 ${
-                  isAdding
-                    ? 'bg-olive-glow/30 text-ivory border border-olive-glow/40'
-                    : 'bg-gold text-ink hover:bg-pale-gold hover:shadow-gold border border-gold'
-                }`}
-              >
-                <ShoppingCart size={15} strokeWidth={1.5} />
-                {isAdding ? 'Added to Cart ✓' : 'Add to Cart'}
-              </button>
+                  {/* Add to cart button */}
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isAdding}
+                    className={`flex-1 flex items-center justify-center gap-2.5 font-heading text-xs tracking-[0.15em] uppercase py-3.5 rounded-lg transition-all duration-400 ${
+                      isAdding
+                        ? 'bg-olive-glow/30 text-ivory border border-olive-glow/40'
+                        : 'bg-gold text-ink hover:bg-pale-gold hover:shadow-gold border border-gold'
+                    }`}
+                  >
+                    <ShoppingCart size={15} strokeWidth={1.5} />
+                    {isAdding ? 'Added to Cart ✓' : 'Add to Cart'}
+                  </button>
+                </>
+              ) : (
+                <button
+                  disabled
+                  className="w-full flex items-center justify-center gap-2.5 font-heading text-xs tracking-[0.15em] uppercase py-3.5 rounded-lg bg-near-black/50 text-sage/40 border border-white/5 cursor-not-allowed"
+                >
+                  Out of Stock
+                </button>
+              )}
             </div>
 
             {/* Trust items */}

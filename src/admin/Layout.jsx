@@ -5,17 +5,26 @@ import { useAuth } from '../context/AuthContext';
 
 
 export default function Layout() {
-  const { admin, logout, isAuthenticated } = useAuth();
+  const { admin, logout, isAuthenticated, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Show nothing while checking session (prevents flash redirect)
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-deep-green">
+        <div className="animate-spin w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full" />
+      </div>
+    );
+  }
 
   // Route protection: redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;
   }
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 
@@ -70,10 +79,10 @@ export default function Layout() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-olive-glow flex items-center justify-center font-heading text-gold font-bold">
-                {admin?.username ? admin.username[0].toUpperCase() : 'A'}
+                {admin?.email ? admin.email[0].toUpperCase() : 'A'}
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-ivory font-medium truncate">{admin?.username || 'Admin'}</p>
+                <p className="text-xs text-ivory font-medium truncate">{admin?.email || 'Admin'}</p>
                 <p className="text-[10px] text-sage/60 font-body">Session active</p>
               </div>
             </div>
