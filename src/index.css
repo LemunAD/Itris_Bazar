@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════
+   GAFYA FONT — Place .woff2/.woff in public/fonts/
+   ═══════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Gafya';
+  src: url('/fonts/Gafiya-Regular.woff2') format('woff2'),
+       url('/fonts/Gafiya-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ═══════════════════════════════════════════════
+   BASE LAYER
+   ═══════════════════════════════════════════════ */
+@layer base {
+  :root {
+    --olive-glow: #3E5D1A;
+    --forest-mid: #3B521C;
+    --deep-green: #1C2B0C;
+    --near-black: #0D1507;
+    --near-black-green: #141E09;
+    --pale-gold: #FFD995;
+    --gold: #F8C568;
+    --bronze: #98842D;
+    --ivory: #F4EFE2;
+    --sage: #B7C4A6;
+    --ink: #0A0F05;
+    --ember: #E4572E;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bronze) var(--near-black-green);
+  }
+
+  body {
+    @apply bg-near-black-green text-ivory antialiased;
+    font-family: 'Roboto', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Gafya', 'Cinzel', Georgia, serif;
+    @apply tracking-wide;
+  }
+
+  ::selection {
+    @apply bg-gold text-ink;
+  }
+
+  img {
+    -webkit-user-drag: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--near-black-green);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bronze);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ═══════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════ */
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, var(--pale-gold), var(--gold), var(--bronze));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .border-glow {
+    border: 1px solid rgba(248, 197, 104, 0.08);
+  }
+
+  .glass-dark {
+    background: rgba(13, 21, 7, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      rgba(248, 197, 104, 0.04) 50%,
+      transparent 75%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  .divider-ornament {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .divider-ornament::before,
+  .divider-ornament::after {
+    content: '';
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, var(--bronze), transparent);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248, 197, 104, 0); }
+  50% { box-shadow: 0 0 20px 2px rgba(248, 197, 104, 0.1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.35s ease-out forwards;
+}
+.animate-slide-out-right {
+  animation: slideOutRight 0.3s ease-in forwards;
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Stagger children */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 80ms; }
+.stagger > *:nth-child(3) { animation-delay: 160ms; }
+.stagger > *:nth-child(4) { animation-delay: 240ms; }
+.stagger > *:nth-child(5) { animation-delay: 320ms; }
+.stagger > *:nth-child(6) { animation-delay: 400ms; }
+.stagger > *:nth-child(7) { animation-delay: 480ms; }
+.stagger > *:nth-child(8) { animation-delay: 560ms; }
+
+/* ═══════════════════════════════════════════════
+   IMAGE PLACEHOLDER (before images are loaded)
+   ═══════════════════════════════════════════════ */
+.img-placeholder {
+  @apply bg-deep-green flex items-center justify-center;
+  background-image: 
+    radial-gradient(circle at 30% 40%, rgba(62, 93, 26, 0.15), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(152, 132, 45, 0.08), transparent 50%);
+}
