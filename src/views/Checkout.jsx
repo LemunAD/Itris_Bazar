@@ -59,7 +59,7 @@ export default function Checkout() {
       navigate('/');
     } catch (err) {
       console.error('Order failed:', err);
-      setError('Failed to place order. Please try again.');
+      setError(err?.message || 'Failed to place order. Please try again.');
       setSubmitting(false);
     }
   };

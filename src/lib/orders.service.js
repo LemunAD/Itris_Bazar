@@ -5,7 +5,7 @@ import { adjustProductStock } from './products.service';
  * Insert a new order into the orders table.
  */
 export async function createOrder({ orderNumber, customer, items, total }) {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('orders')
     .insert({
       order_number: orderNumber,
@@ -17,12 +17,9 @@ export async function createOrder({ orderNumber, customer, items, total }) {
       items,                // JSONB — the cart array
       total,
       status: 'pending',
-    })
-    .select()
-    .single();
+    });
 
   if (error) throw error;
-  return data;
 }
 
 /**
