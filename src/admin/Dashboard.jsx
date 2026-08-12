@@ -61,67 +61,94 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6 lg:gap-8">
 
       {/* ── STATS ROW ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
 
         {/* Total Revenue */}
-        <div className="bg-forest-mid border border-white/5 p-6 rounded-lg">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-[10px] text-sage uppercase tracking-wider font-heading">Total Revenue</span>
-            <DollarSign size={18} className="text-gold" />
+        <div className="bg-forest-mid border border-white/5 p-4 lg:p-6 rounded-lg">
+          <div className="flex justify-between items-start mb-2 lg:mb-3">
+            <span className="text-[9px] lg:text-[10px] text-sage uppercase tracking-wider font-heading">Revenue</span>
+            <DollarSign size={16} className="text-gold hidden sm:block" />
           </div>
-          <p className="font-heading text-2xl text-ivory font-bold">{totalRevenue.toFixed(2)} DH</p>
-          <p className="text-[10px] text-gold flex items-center gap-1 mt-2">
-            <TrendingUp size={12} />
-            Live from Supabase
+          <p className="font-heading text-lg lg:text-2xl text-ivory font-bold">{totalRevenue.toFixed(0)} <span className="text-sm text-ivory/50">DH</span></p>
+          <p className="text-[9px] lg:text-[10px] text-gold flex items-center gap-1 mt-1.5 lg:mt-2">
+            <TrendingUp size={10} />
+            Live
           </p>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-forest-mid border border-white/5 p-6 rounded-lg">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-[10px] text-sage uppercase tracking-wider font-heading">Total Orders</span>
-            <ShoppingBag size={18} className="text-gold" />
+        <div className="bg-forest-mid border border-white/5 p-4 lg:p-6 rounded-lg">
+          <div className="flex justify-between items-start mb-2 lg:mb-3">
+            <span className="text-[9px] lg:text-[10px] text-sage uppercase tracking-wider font-heading">Orders</span>
+            <ShoppingBag size={16} className="text-gold hidden sm:block" />
           </div>
-          <p className="font-heading text-2xl text-ivory font-bold">{totalOrders}</p>
-          <p className="text-[10px] text-sage/65 mt-2">Through storefront checkout</p>
+          <p className="font-heading text-lg lg:text-2xl text-ivory font-bold">{totalOrders}</p>
+          <p className="text-[9px] lg:text-[10px] text-sage/65 mt-1.5 lg:mt-2">Total placed</p>
         </div>
 
         {/* Pending Orders */}
-        <div className="bg-forest-mid border border-white/5 p-6 rounded-lg">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-[10px] text-sage uppercase tracking-wider font-heading">Pending Orders</span>
-            <Loader size={18} className={`text-gold ${pendingOrders > 0 ? 'animate-spin' : ''}`} />
+        <div className="bg-forest-mid border border-white/5 p-4 lg:p-6 rounded-lg">
+          <div className="flex justify-between items-start mb-2 lg:mb-3">
+            <span className="text-[9px] lg:text-[10px] text-sage uppercase tracking-wider font-heading">Pending</span>
+            <Loader size={16} className={`text-gold hidden sm:block ${pendingOrders > 0 ? 'animate-spin' : ''}`} />
           </div>
-          <p className="font-heading text-2xl text-ivory font-bold">{pendingOrders}</p>
-          <p className="text-[10px] text-sage/65 mt-2">Awaiting courier dispatch</p>
+          <p className="font-heading text-lg lg:text-2xl text-ivory font-bold">{pendingOrders}</p>
+          <p className="text-[9px] lg:text-[10px] text-sage/65 mt-1.5 lg:mt-2">Awaiting dispatch</p>
         </div>
 
         {/* Catalog Items */}
-        <div className="bg-forest-mid border border-white/5 p-6 rounded-lg">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-[10px] text-sage uppercase tracking-wider font-heading">Active Products</span>
-            <FolderPlus size={18} className="text-gold" />
+        <div className="bg-forest-mid border border-white/5 p-4 lg:p-6 rounded-lg">
+          <div className="flex justify-between items-start mb-2 lg:mb-3">
+            <span className="text-[9px] lg:text-[10px] text-sage uppercase tracking-wider font-heading">Products</span>
+            <FolderPlus size={16} className="text-gold hidden sm:block" />
           </div>
-          <p className="font-heading text-2xl text-ivory font-bold">{totalProducts}</p>
-          <p className="text-[10px] text-sage/65 mt-2">In Supabase catalog</p>
+          <p className="font-heading text-lg lg:text-2xl text-ivory font-bold">{totalProducts}</p>
+          <p className="text-[9px] lg:text-[10px] text-sage/65 mt-1.5 lg:mt-2">In catalog</p>
         </div>
 
       </div>
 
 
       {/* ── DETAILS PANEL ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
 
-        {/* Recent Orders table */}
+        {/* Recent Orders */}
         <div className="lg:col-span-2 bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
-          <div className="p-5 border-b border-white/5 flex justify-between items-center">
+          <div className="p-4 lg:p-5 border-b border-white/5 flex justify-between items-center">
             <h3 className="font-heading text-sm text-ivory uppercase tracking-wider">Recent Transactions</h3>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile card view */}
+          <div className="lg:hidden">
+            {orders.length === 0 ? (
+              <div className="p-8 text-center text-sage/40 text-sm">
+                No order logs available.
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {orders.map((o) => (
+                  <div key={o.orderNumber} className="p-4 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs text-ivory font-heading truncate">{o.orderNumber}</p>
+                      <p className="text-[10px] text-sage/50 mt-0.5">{o.customer.name} · {o.customer.city}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <span className="bg-gold/15 text-gold text-[9px] uppercase font-heading px-2 py-0.5 rounded">
+                        {o.status}
+                      </span>
+                      <p className="text-gold font-heading text-xs mt-1">{o.total.toFixed(2)} DH</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-near-black-green/30 text-sage uppercase tracking-wider border-b border-white/5 font-heading">
@@ -165,12 +192,12 @@ export default function Dashboard() {
         </div>
 
         {/* Analytics Card */}
-        <div className="bg-forest-mid border border-white/5 p-6 rounded-lg">
-          <h3 className="font-heading text-sm text-ivory uppercase tracking-wider mb-6 border-b border-white/5 pb-3">
+        <div className="bg-forest-mid border border-white/5 p-4 lg:p-6 rounded-lg">
+          <h3 className="font-heading text-sm text-ivory uppercase tracking-wider mb-4 lg:mb-6 border-b border-white/5 pb-3">
             Sales (Last 7 Days)
           </h3>
 
-          <div className="h-48 flex items-end justify-between gap-2 mt-4 pb-2 border-b border-white/5 relative">
+          <div className="h-40 lg:h-48 flex items-end justify-between gap-1.5 lg:gap-2 mt-4 pb-2 border-b border-white/5 relative">
             {chartData.map((d, i) => {
               const heightPercent = (d.revenue / maxRevenue) * 100;
               return (
@@ -185,15 +212,15 @@ export default function Dashboard() {
                     style={{ height: `${Math.max(heightPercent, 2)}%` }}
                   />
                   {/* Label */}
-                  <span className="text-[9px] text-sage/60 mt-2 uppercase">
+                  <span className="text-[8px] lg:text-[9px] text-sage/60 mt-1.5 lg:mt-2 uppercase">
                     {d.label}
                   </span>
                 </div>
               );
             })}
           </div>
-          <div className="mt-4 flex items-center justify-between text-[11px] text-sage/70">
-            <span>Only delivered orders</span>
+          <div className="mt-3 lg:mt-4 flex items-center justify-between text-[10px] lg:text-[11px] text-sage/70">
+            <span>Delivered only</span>
             <Link to="/shop" className="text-gold hover:underline flex items-center gap-1">
               Shop <ArrowRight size={12} />
             </Link>

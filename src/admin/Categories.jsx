@@ -153,15 +153,60 @@ export default function Categories() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-gold text-ink font-heading text-xs tracking-wider uppercase px-5 py-2.5 rounded-lg hover:bg-pale-gold hover:shadow-gold transition-all"
+          className="flex items-center gap-2 bg-gold text-ink font-heading text-xs tracking-wider uppercase px-4 sm:px-5 py-2.5 rounded-lg hover:bg-pale-gold hover:shadow-gold transition-all"
         >
           <Plus size={15} />
-          Add Category
+          <span className="hidden sm:inline">Add Category</span>
+          <span className="sm:hidden">Add</span>
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
+      {/* ── MOBILE CARD VIEW (< lg) ── */}
+      <div className="flex flex-col gap-3 lg:hidden">
+        {categories.length === 0 ? (
+          <div className="bg-forest-mid border border-white/5 rounded-lg p-8 text-center text-sage/40 text-sm">
+            No categories yet. Click "Add Category" to get started.
+          </div>
+        ) : (
+          categories.map((cat) => (
+            <div key={cat.id} className="bg-forest-mid border border-white/5 rounded-lg p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm text-ivory font-medium">{cat.name}</h3>
+                  <p className="text-[10px] text-sage/40 font-mono mt-0.5">{cat.slug}</p>
+                  {cat.description && (
+                    <p className="text-[11px] text-sage/50 mt-2 line-clamp-2">{cat.description}</p>
+                  )}
+                  <div className="mt-2">
+                    <span className="bg-gold/10 text-gold text-[10px] font-heading px-2 py-0.5 rounded">
+                      {cat.productCount} product{cat.productCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button
+                    onClick={() => openEdit(cat)}
+                    className="p-2 text-sage/50 hover:text-gold transition-colors"
+                    title="Edit category"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button
+                    onClick={() => setDeleteTarget(cat)}
+                    className="p-2 text-sage/50 hover:text-ember transition-colors"
+                    title="Delete category"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* ── DESKTOP TABLE VIEW (lg+) ── */}
+      <div className="hidden lg:block bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>

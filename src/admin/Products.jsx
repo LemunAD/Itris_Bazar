@@ -174,15 +174,82 @@ export default function Products() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-gold text-ink font-heading text-xs tracking-wider uppercase px-5 py-2.5 rounded-lg hover:bg-pale-gold hover:shadow-gold transition-all"
+          className="flex items-center gap-2 bg-gold text-ink font-heading text-xs tracking-wider uppercase px-4 sm:px-5 py-2.5 rounded-lg hover:bg-pale-gold hover:shadow-gold transition-all"
         >
           <Plus size={15} />
-          Add Product
+          <span className="hidden sm:inline">Add Product</span>
+          <span className="sm:hidden">Add</span>
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
+      {/* ── MOBILE CARD VIEW (< lg) ── */}
+      <div className="flex flex-col gap-3 lg:hidden">
+        {products.length === 0 ? (
+          <div className="bg-forest-mid border border-white/5 rounded-lg p-8 text-center text-sage/40 text-sm">
+            No products yet. Click "Add Product" to get started.
+          </div>
+        ) : (
+          products.map((p) => (
+            <div key={p.id} className="bg-forest-mid border border-white/5 rounded-lg p-3 flex gap-3">
+              {/* Thumbnail */}
+              <div className="flex-shrink-0">
+                {p.images?.[0] ? (
+                  <img
+                    src={p.images[0]}
+                    alt=""
+                    className="w-14 h-[4.5rem] object-cover rounded-md border border-white/5"
+                  />
+                ) : (
+                  <div className="w-14 h-[4.5rem] rounded-md border border-white/5 bg-near-black-green/40 flex items-center justify-center">
+                    <ImageIcon size={16} className="text-sage/20" />
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs text-ivory font-medium truncate">{p.name}</h3>
+                    {p.featured && <Star size={11} className="text-gold fill-gold flex-shrink-0" />}
+                  </div>
+                  <p className="text-[10px] text-sage/50 mt-0.5">{p.categories?.name || '—'}</p>
+                </div>
+                <div className="flex items-center gap-3 mt-2">
+                  <span className="text-gold font-heading text-xs">{Number(p.price).toFixed(2)} DH</span>
+                  <span className="text-[10px] text-sage/50">·</span>
+                  {p.stock > 0 ? (
+                    <span className="text-[10px] text-ivory/60">Stock: {p.stock}</span>
+                  ) : (
+                    <span className="text-[10px] text-ember font-medium">Out of stock</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col items-center justify-center gap-1 flex-shrink-0">
+                <button
+                  onClick={() => openEdit(p)}
+                  className="p-2 text-sage/50 hover:text-gold transition-colors"
+                  title="Edit product"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(p)}
+                  className="p-2 text-sage/50 hover:text-ember transition-colors"
+                  title="Delete product"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* ── DESKTOP TABLE VIEW (lg+) ── */}
+      <div className="hidden lg:block bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
@@ -199,7 +266,7 @@ export default function Products() {
             <tbody className="divide-y divide-white/5 text-sage">
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sage/40">
+                  <td colSpan={7} className="p-8 text-center text-sage/40">
                     No products yet. Click "Add Product" to get started.
                   </td>
                 </tr>

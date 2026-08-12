@@ -89,8 +89,124 @@ export default function Orders() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
+      {/* ── MOBILE CARD VIEW (< lg) ── */}
+      <div className="flex flex-col gap-3 lg:hidden">
+        {orders.length === 0 ? (
+          <div className="bg-forest-mid border border-white/5 rounded-lg p-8 text-center text-sage/40 text-sm">
+            No orders yet. Orders will appear here when customers checkout.
+          </div>
+        ) : (
+          orders.map((o) => (
+            <div key={o.id} className="bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
+              {/* Card header */}
+              <div className="p-4 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-ivory font-heading text-xs truncate">{o.orderNumber}</span>
+                    <select
+                      value={o.status}
+                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                      className={`text-[9px] uppercase font-heading px-2 py-0.5 rounded border cursor-pointer outline-none bg-transparent ${STATUS_COLORS[o.status] || 'text-sage border-white/10'}`}
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s} value={s} className="bg-forest-mid text-ivory">
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <p className="text-[11px] text-sage/60">{o.customer.name} · {o.customer.city}</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-gold font-heading text-sm">{o.total.toFixed(2)} DH</p>
+                  <p className="text-[10px] text-sage/40">{new Date(o.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              {/* Card actions */}
+              <div className="px-4 pb-3 flex items-center gap-2">
+                <button
+                  onClick={() => toggleExpand(o.id)}
+                  className="flex items-center gap-1 text-[10px] text-sage/50 hover:text-gold transition-colors uppercase tracking-wider font-heading"
+                >
+                  {expandedId === o.id ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                  {expandedId === o.id ? 'Hide Details' : 'Details'}
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(o)}
+                  className="ml-auto p-1.5 text-sage/40 hover:text-ember transition-colors"
+                  title="Delete order"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+
+              {/* Expanded details */}
+              {expandedId === o.id && (
+                <div className="px-4 pb-4 pt-1 border-t border-white/5">
+                  <div className="flex flex-col gap-4">
+                    {/* Customer */}
+                    <div className="bg-deep-green/40 border border-white/5 rounded-lg p-3">
+                      <h4 className="font-heading text-[10px] text-gold/70 uppercase tracking-wider mb-2">Customer</h4>
+                      <div className="flex flex-col gap-1.5 text-xs">
+                        <div className="flex items-center gap-2 text-ivory/70">
+                          <User size={11} className="text-sage/40" />
+                          {o.customer.name}
+                        </div>
+                        {o.customer.email && (
+                          <div className="flex items-center gap-2 text-ivory/70">
+                            <Mail size={11} className="text-sage/40" />
+                            <span className="truncate">{o.customer.email}</span>
+                          </div>
+                        )}
+                        {o.customer.phone && (
+                          <div className="flex items-center gap-2 text-ivory/70">
+                            <Phone size={11} className="text-sage/40" />
+                            {o.customer.phone}
+                          </div>
+                        )}
+                        <div className="flex items-start gap-2 text-ivory/70">
+                          <MapPin size={11} className="text-sage/40 mt-0.5 flex-shrink-0" />
+                          <span>{o.customer.address}, {o.customer.city}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Items */}
+                    <div className="bg-deep-green/40 border border-white/5 rounded-lg p-3">
+                      <h4 className="font-heading text-[10px] text-gold/70 uppercase tracking-wider mb-2">
+                        Items ({o.items.length})
+                      </h4>
+                      <div className="flex flex-col gap-2">
+                        {o.items.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2.5 text-xs">
+                            {item.image ? (
+                              <img src={item.image} alt="" className="w-7 h-9 object-cover rounded border border-white/5" />
+                            ) : (
+                              <div className="w-7 h-9 rounded border border-white/5 bg-near-black-green/40 flex items-center justify-center">
+                                <Package size={9} className="text-sage/20" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-ivory/70 truncate text-[11px]">{item.name}</p>
+                              <p className="text-[10px] text-sage/40">× {item.quantity}</p>
+                            </div>
+                            <span className="text-gold/70 font-heading text-[11px]">
+                              {(item.price * item.quantity).toFixed(2)} DH
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* ── DESKTOP TABLE VIEW (lg+) ── */}
+      <div className="hidden lg:block bg-forest-mid border border-white/5 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
