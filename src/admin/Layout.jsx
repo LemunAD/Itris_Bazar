@@ -60,7 +60,7 @@ export default function Layout() {
       <div className="h-20 border-b border-white/5 px-6 flex items-center gap-3 flex-shrink-0">
         <img src="/logos/itris_logo.png" alt="Itris" className="h-8 w-auto" />
         <div>
-          <h2 className="font-heading text-sm text-ivory tracking-widest uppercase">Itris Bazar</h2>
+          <h2 className="font-heading text-sm text-ivory tracking-widest uppercase">Itris Bazaar</h2>
           <p className="text-[10px] text-sage font-body uppercase tracking-wider">Admin Panel</p>
         </div>
       </div>

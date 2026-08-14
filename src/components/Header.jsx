@@ -61,11 +61,11 @@ export default function Header() {
           <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
             <img
               src="/logos/itris_logo_white.png"
-              alt="Itris Bazar"
+              alt="Itris Bazaar"
               className="h-[46px] w-auto transition-transform duration-300 group-hover:scale-105"
             />
             <span className="font-heading text-base tracking-[0.2em] text-ivory uppercase hidden sm:inline-block transition-colors group-hover:text-gold mt-1">
-              Itris Bazar
+              Itris Bazaar
             </span>
           </Link>
 

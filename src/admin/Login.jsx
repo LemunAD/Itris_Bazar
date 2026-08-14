@@ -35,8 +35,8 @@ export default function Login() {
         
         {/* Brand Logo Header */}
         <div className="flex flex-col items-center mb-8 text-center">
-          <img src="/logos/itris_logo.png" alt="Itris Bazar" className="h-14 w-auto mb-4" />
-          <h1 className="font-heading text-2xl text-ivory">Itris Bazar</h1>
+          <img src="/logos/itris_logo.png" alt="Itris Bazaar" className="h-14 w-auto mb-4" />
+          <h1 className="font-heading text-2xl text-ivory">Itris Bazaar</h1>
           <p className="text-xs text-sage mt-1">Boutique management portal</p>
         </div>
 

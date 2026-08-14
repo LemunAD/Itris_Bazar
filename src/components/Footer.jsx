@@ -32,7 +32,7 @@ export default function Footer() {
         <div className="lg:col-span-1">
           <Link to="/" className="flex items-center gap-2.5 mb-4">
             <img src="/logos/itris_logo_white.png" alt="Itris" className="h-10 w-auto opacity-60" />
-            <span className="font-heading text-base tracking-[0.2em] text-ivory/80 uppercase">Itris Bazar</span>
+            <span className="font-heading text-base tracking-[0.2em] text-ivory/80 uppercase">Itris Bazaar</span>
           </Link>
           <p className="text-xs leading-relaxed max-w-xs">
             Curated alternative home décor from Morocco. Celestial wall tapestries, tarot decks, and unique pieces to make your space shine.
@@ -81,7 +81,7 @@ export default function Footer() {
       <div className="border-t border-white/[0.04]">
         <div className="max-w-7xl mx-auto px-5 lg:px-8 py-6 flex flex-col items-center gap-4 text-[11px] text-sage/40">
           <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4">
-            <p>&copy; {new Date().getFullYear()} Itris Bazar. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Itris Bazaar. All rights reserved.</p>
             <div className="flex items-center gap-4">
               <a href="https://www.instagram.com/itrisbazaar/" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors" aria-label="Instagram">
                 <InstagramIcon size={15} strokeWidth={1.5} />
