@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Star, StarOff, Image as ImageIcon } from 'lucide-
 import { fetchProductsRaw, createProduct, updateProduct, deleteProduct } from '../lib/products.service';
 import { fetchCategories } from '../lib/categories.service';
 import AdminModal from './AdminModal';
+import ImageDropZone from './ImageDropZone';
 
 // Slug generator
 function slugify(text) {
@@ -19,7 +20,7 @@ const emptyForm = {
   slug: '',
   category_id: '',
   price: '',
-  images: '',
+  images: [],
   short_description: '',
   description: '',
   featured: false,
@@ -80,7 +81,7 @@ export default function Products() {
       slug: product.slug,
       category_id: product.category_id,
       price: String(product.price),
-      images: (product.images || []).join('\n'),
+      images: product.images || [],
       short_description: product.short_description || '',
       description: product.description || '',
       featured: product.featured,
@@ -112,10 +113,7 @@ export default function Products() {
       slug: form.slug.trim(),
       category_id: form.category_id,
       price: parseFloat(form.price),
-      images: form.images
-        .split('\n')
-        .map((s) => s.trim())
-        .filter(Boolean),
+      images: form.images.filter(Boolean),
       short_description: form.short_description.trim(),
       description: form.description.trim(),
       featured: form.featured,
@@ -388,19 +386,12 @@ export default function Products() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-[10px] text-sage/50 uppercase tracking-wider mb-1.5">
-              Image URLs <span className="text-sage/30">(one per line)</span>
-            </label>
-            <textarea
-              name="images"
-              value={form.images}
-              onChange={handleChange}
-              rows={3}
-              className={`${inputClass} resize-none font-mono text-[11px]`}
-              placeholder={"/images/products/slug/1.jpeg\n/images/products/slug/2.jpeg"}
-            />
-          </div>
+          <ImageDropZone
+            images={form.images}
+            onChange={(urls) => setForm((prev) => ({ ...prev, images: urls }))}
+            folder={form.slug || 'new-product'}
+            max={8}
+          />
 
           <div>
             <label className="block text-[10px] text-sage/50 uppercase tracking-wider mb-1.5">Short Description</label>
